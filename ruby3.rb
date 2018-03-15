@@ -10,71 +10,63 @@ class Car
     attr_accessor :color
 
     def describe
-        puts "The car has #{doors} doors, #{cylinders} cylinders and its color is #{color}"
+        "The car has #{doors} doors, #{cylinders} cylinders and its color is #{color}"
+    end
+
+    def num_doors?
+        @doors.to_i == 2 ? @num_doors = 2 : @num_doors = 4
+    end
+
+    def change_color
+        case @num_doors
+        when 2
+            @color = 'green' if @color == 'prime'
+            @color = 'red' if @color == 'white'
+        else
+            @color = 'black' if @color == 'white'
+            @color = 'grey' if @color == 'yellow'
+        end
     end
 end
 
-def read_file(file_name)
+def create_from_file(file_name)
     File.open(file_name, 'r' )do |f|
     cars = []
-    while line = f.gets
-            attributes = line.split('|')
-            car = Car.new(attributes[0], attributes[1], attributes[2])
-            cars.push(car)   
-    end
-    return cars
-end
-end
-
-$cars_array = read_file("ruby3.txt")
-
-def new_set
-    @set1=[]
-    @set2=[]
-    $cars_array.map do |car|
-        if car.doors.to_i == 2
-            @set1.push(car)
-        elsif car.doors.to_i == 4
-            @set2.push(car)
+        while line = f.gets
+                attributes = line.strip.split('|')
+                car = Car.new(attributes[0], attributes[1], attributes[2])
+                cars << car   
         end
+        cars
     end
 end
 
-new_set
-puts "Set1:"
-puts @set1[0].describe
-puts @set1[1].describe
-puts @set1[2].describe
-puts "Set2:"
-puts @set2[0].describe
-puts @set2[1].describe
+$cars_array = create_from_file("ruby3.txt")
 
-def change_colors(array)
-    array.each do |car|
-        if car.doors.to_i == 2
-            if car.color == 'prime'
-                car.color='red'
-            else
-                car.color='green'
-            end
-        else
-            if car.color == 'white'
-                car.color='black'
-            else
-                car.color='grey'
-            end
-        end
-    end
+def sort_by_num_doors(array)
+    @two_door_cars = []
+    @four_door_cars = []
+    array.map { |car| car.num_doors? == 2 ? @two_door_cars << car : @four_door_cars << car }
 end
 
-change_colors(@set1)
-change_colors(@set2)
+sort_by_num_doors($cars_array)
 
-puts "** After changing colors **"
-puts "Set1:"
-puts @set1[0].color
-puts @set1[1].color
-puts @set1[2].color
-puts "Set2:"
-puts @set2[0].color
-puts @set2[1].color
+puts "Cars with two doors:"
+puts @two_door_cars[0].describe
+puts @two_door_cars[1].describe
+puts @two_door_cars[2].describe
+puts "Cars with four doors:"
+puts @four_door_cars[0].describe
+puts @four_door_cars[1].describe
+
+@two_door_cars.map {|car| car.change_color}
+@four_door_cars.map {|car| car.change_color}
+
+puts "** After changing colors the colors of the cars are **"
+puts "Cars with two doors:"
+puts @two_door_cars[0].color
+puts @two_door_cars[1].color
+puts @two_door_cars[2].color
+puts "Cars with four doors:"
+puts @four_door_cars[0].color
+puts @four_door_cars[1].color
